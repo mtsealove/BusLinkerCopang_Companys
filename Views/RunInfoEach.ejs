@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <% include Head%>
+    <script>
+        var newDataIndex=0;
+    </script>
+
+    <script src="/Scripts/Table.js"></script>
+    <script src="/Scripts/Input.js"></script>
+    <script src="/Scripts/window.js"></script>
+
+</head>
+
+<body>
+    <!--상단 헤더-->
+    <% include Header %>
+    <!--본문-->
+    <div style="text-align: left; min-width: 600px; max-width: 40%;margin: auto" id="contents">
+        <h5 style="margin-top: 20px">운행정보</h5>
+        <table class="table" style="text-align: center">
+            <thead class="thead-dark" style="width:100%">
+                <th colspan="3">출발지</th>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>출발지명</td>
+                    <td colspan="2"><%= TableContent.startName %></td>
+                </tr>
+                <tr>
+                    <td>출발주소</td>
+                    <td colspan="2"><%= TableContent.startAddr %></td>
+                </tr>
+                <tr>
+                    <td>출발시간</td>
+                    <td colspan="2"><%= (TableContent.startTime).substring(0, 5) %></td>
+                </tr>
+            </tbody>
+            <thead class="table-dark">
+                <tr>
+                    <th colspan="3">경유지</th>
+                </tr>
+                <tr>
+                    <th>경유지명</th>
+                    <th>경유지 종류</th>
+                    <th>경유지 주소</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% 
+                    var wayloadNames=(TableContent.wayloadNames).split(';;');
+                    var wayloadCats=(TableContent.wayloadCats).split(';;');
+                    var wayloadAddrs=(TableContent.wayloadAddrs).split(';;');
+                    for(var i=0; i<wayloadAddrs.length; i++) { %>
+                <tr>
+                    <td><%= wayloadNames[i] %></td>
+                    <td><%= wayloadCats[i] %></td>
+                    <td><%= wayloadAddrs[i] %></td>
+                </tr>
+                <% } %>
+            </tbody>
+            <thead>
+                <th class="table-dark" colspan="3">도착지</th>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>도착지명</td>
+                    <td colspan="2"><%= TableContent.endName %></td>
+                </tr>
+                <tr>
+                    <td>도착주소</td>
+                    <td colspan="2"><%= TableContent.endAddr %></td>
+                </tr>
+                <tr>
+                    <td>도착시간</td>
+                    <td colspan="2"><%= (TableContent.endTime).substring(0, 5) %></td>
+
+                </tr>
+            </tbody>
+
+
+            <thead>
+                <th class="table-dark" colspan="3">계약정보</th>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>금액</td>
+                    <% 
+                    var OgCharge=String(TableContent.charge);
+                    var newCharge='';
+                    for(var i=0; i<OgCharge.length; i++){
+                        newCharge+=OgCharge[i];
+                        if((OgCharge.length-i-1)%3==0&&OgCharge.length!=i+1)
+                        newCharge+=',';
+                    }
+                    %>
+                    <th colspan="2" style="color: red"><%= newCharge %></th>
+                </tr>
+                <tr>
+                    <td>계약 기간</td>
+
+                    <td colspan="2">
+                        <%= (TableContent.ContractStart).substring(0, 10)+'~'+(TableContent.ContractEnd).substring(0, 10) %>
+                    </td>
+                </tr>
+        </table>
+        <div style="text-align: center">
+            <button style="display: inline-block" onclick="location.href='/RunInfoEach?Month=<%= (Month-1) %>&RunInfoID=<%=RunInfoID%>'">이전</button>
+            <p style="display: inline-block"><%= Month+'월' %></p>
+            <button style="display: inline-block" onclick="location.href='/RunInfoEach?Month=<%= parseInt(Month)+1 %>&RunInfoID=<%=RunInfoID%>'">다음</button>
+        </div>
+        <table class="table table-bordered" style="margin-bottom:20px">
+            <thead style="text-align: center">
+                <tr style="height: 50px">
+                    <th style="color: red">일요일</th>
+                    <th>월요일</th>
+                    <th>화요일</th>
+                    <th>수요일</th>
+                    <th>목요일</th>
+                    <th>금요일</th>
+                    <th style="color:skyblue">토요일</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% for(var i=0; i<Calendar.length; i++){ %>
+                <tr>
+                    <% for(var j=0; j<Calendar[i].length; j++){ 
+                        var color;
+                        switch(j){
+                            case 0:
+                            color='red';
+                            break;
+                            case 6:
+                            color='skyblue';
+                            break;
+                            default:
+                            color='black';
+                        }
+                        
+                        %>
+                    <td>
+                        <div style="height: 60px; margin: -7px"
+                            onclick="OpenDriverSelect('<%= Month+'-'+Calendar[i][j].date %>')">
+                            <% try { %>
+                            <p style="color: <%= color %>; margin-bottom: 0px"><%= Calendar[i][j].date %></p>
+                            <p style="font-size: 14px" id="DriverName<%= Calendar[i][j].date %>">
+                                <%= Calendar[i][j].DriverName %></p>
+                            <% } catch(error) {
+                            } %>
+                        </div>
+                    </td>
+                    <% } %>
+                </tr>
+                <% } %>
+            </tbody>
+        </table>
+        <form method="POST" action="/RunInfoEach" id="newData">
+            <input hidden name="RunInfoID" value="<%=RunInfoID%>">
+            <button type="button" class="btn btn-warning btn-block" style="color: white" onclick="ConfirmReg()">등록하기</button>
+        </form>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ko">
+    <head>
+        <% include Head%>
+        <script>
+                var gray = '#F5F5F5';
+                function TRHightlight(obj) {
+                    obj.style.backgroundColor = '#3a99ff';
+                }
+                function TRHightlightRemove(obj, index) {
+                    if (index % 2 == 1)
+                        obj.style.backgroundColor = gray;
+                    else
+                        obj.style.backgroundColor = '#FFFFFF';
+                }
+            </script>
+        <link rel="stylesheet" type="text/css" href="/Css/Pagenation.css"/>
+    </head>
+    <body>
+        <!--상단 헤더-->
+        <% include Header %>
+        <!--본문-->
+        <center>
+        <div style="text-align: left; min-width: 600px; width: 80%;">
+            <h5 style="margin-top: 20px; margin-left: 5px">운행정보</h5>
+        <!--검색 창-->
+        <div style="margin-top: 20px; min-width: 600px">
+        <form method="GET" action="/Members" >
+            <div class="input-group mb2" style="width: 400px">
+            <input class="form-control" name="keyword" style="width: 200px" placeholder="검색어를 입력하세요">
+            <button type="submit" class="btn btn-primary">조회</button>
+            </div>
+        </form>
+        </div>
+        <!--내용 테이블-->
+        <div class="table-responsive">
+            
+        <table class="table table-striped" style="margin-top: 20px; text-align: center">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>출발지명</th>
+                        <th>출발주소</th>
+                        <th>도착지명</th>
+                        <th>도착주소</th>
+                        <th>경유지 수</th>
+                        <th>금액</th>
+                        <th>계약 기간</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% var index=1;
+                        for(let data of TableContent) { 
+                            var count=((data.wayloadCats).split(';;')).length;
+                            %>
+                            <tr onmouseover="TRHightlight(this)" onmouseout="TRHightlightRemove(this, <%= index %>)" onclick="location.href='/RunInfoEach?RunInfoID=<%= data.ID %>'">
+                                <td><%= index %></td>
+                                <td><%= data.startName %></td>
+                                <td><%= data.startAddr %></td>
+                                <td><%= data.endName %></td>
+                                <td><%= data.endAddr %></td>
+                                <td><%= count+'개' %></td>
+                                <td><%= data.charge %></td>
+                                <td><%= (data.ContractStart).substring(0, 10)+'~'+(data.ContractEnd).substring(0, 10) %></td>
+                            </tr>
+                    <% index++; } %>
+                </tbody>
+        </table>
+    </div>
+        <!--인디케이터-->
+        <div class="text-xs-center" style="margin-top: 40px">
+            <ul class="pagination justify-content-center">
+                <!--내용-->
+                <%  
+                    for(var i=0; i<totalpage; i++) { 
+                    var active;    //현재 탭인지 확인
+                    if(page==i) active='active';
+                    else active=''; %>
+                
+                    <li class="page-item <%= active %>"><a class="page-link" href="/Members?MemberCat=<%= MemberCat %>&page=<%= i %>"><%= i+1 %></a></li>    
+                <% } %>
+                <!--다음-->
+            
+              </ul>
+          </div>
+    </div>
+    </center>
+    </body>
+</html>

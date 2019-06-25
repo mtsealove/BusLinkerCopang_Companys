@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <% include Head%>
+
+    <script src="/Scripts/Table.js"></script>
+    <script src="/Scripts/window.js"></script>
+    <script>
+        //데이터 반환
+        function ReturnID(ID, DriverName) {
+            if(confirm(DriverName+"기사님을 선택하시겠습니까?")){
+            var Result = {
+                RunDate: '<%= RunDate %>',
+                DriverID: ID
+            };
+            var IdOfParagh = 'DriverName' + Result.RunDate.split('-')[2];
+            (opener.document.getElementById(IdOfParagh)).innerHTML = DriverName;
+            
+            //데이터로 추가
+            (opener.document.getElementById('newData')).innerHTML+='<input hidden name="RunDate'+opener.newDataIndex+'" value="<%=RunDate%>">';
+
+            (opener.document.getElementById('newData')).innerHTML+='<input hidden name="DriverID'+opener.newDataIndex+'" value="'+ID+'" id="Run<%=RunDate%>">';
+
+            opener.newDataIndex++;
+            window.close();
+        }
+    }
+    </script>
+</head>
+
+<body>
+    <!--검색 옵션-->
+    <form id="SearchDriverForm" method="GET" action="/SelectDriver">
+        <h5 style="margin-top: 20px; margin-left:20px">기사님 선택</h5>
+        <div style="display: inline">
+            <input class="form-control" name="key"
+                style="display: inline-block; width: 70%; height: 40px;margin-top: 10px;margin-left: 20px"
+                placeholder="검색어를 입력하세요">
+            <input name="RunInfoID" value="<%= RunInfoID %>" hidden>
+            <input name="RunDate" value="<%= RunDate %>" hidden>
+            <button type="submit" class="btn btn-warning"
+                style="display: inline-block; width: 20%; height: 40px; margin-top: -5px">검색</button>
+        </div>
+    </form>
+    <!--본문-->
+    <table class="table" style="margin-top: 20px; font-size: 11pt">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>이름</th>
+                <th>ID</th>
+                <th>차종</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% var index=1;
+            for(let data of Contents){ %>
+            <tr style="font-size: 10pt" onclick="ReturnID('<%=data.ID%>', '<%=data.Name%>')"
+                onmouseover="TRHightlight(this)" onmouseout="TRHightlightRemove(this, <%= index %>)">
+                <td><%= index %></td>
+                <td><%= data.Name %></td>
+                <td><%= data.ID %></td>
+                <td><%= data.CarType %></td>
+            </tr>
+            <% index++; } %>
+        </tbody>
+    </table>
+</body>
+
+</html>
